@@ -5,10 +5,11 @@ import './NewTodo.css';
 class NewTodo extends Component {
   
   render() {
+
     return (
-      <div className="newtodo">
-        <h2><button className="finish"> </button> Check</h2> value=(this.props.value)
-      </div>
+      <form className="newtodo" onSubmit = {this.props.addTodo}>
+        <h2><button className="finish"> </button> Check</h2>
+      </form>
     );
   }
 }
