@@ -4,6 +4,21 @@ import Todo from './Todo';
 import NewTodo from './NewTodo';
 import ReactDom from 'react-dom';
 
+var xhttp = new XMLHttpRequest();
+function loadAPI() {
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          var itemsList = JSON.parse(this.responseText);
+          for (let i=0; i<itemsList.length; i++) {
+              createItem(itemsList[i]);
+          }
+      }
+  }
+
+  xhttp.open("GET", "https://cse204.work/todos", true);
+  xhttp.setRequestHeader("x-api-key","ea8ab2-ab5cb1-9254fd-35e967-531f0c");
+  xhttp.send();
+}
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -15,19 +30,28 @@ class App extends React.Component {
   render() {
     return (
       <section id = "todos">
-        <NewTodo  createItem = {this.createItem}/>
-        {this.state.todos.map((todo)=> <Todo key = {todo.id} text = {todo.text} />)}   
+       
     
       <div className="app">
         <h1>Adam Oubaita ToDo App</h1>
-        <input type="text" id="new-task" placeholder="Complete"></input> 
-        <input type="button" onClick="componentDidMount()" id="add-item-button" class = "add-item-button" value ="Add"></input>
+        
+
+        <input type="text" onClick="componentWillUpdate()" onKeyDown={this.handleKeyDown} id="new-task" placeholder="Complete"></input> 
+        <input type="button" onClick="componentDidMount()" onKeyDown={this.handleKeyDown} id="add-item-button" class = "add-item-button" value ="Add"></input>
         <section id = "newtodos"> </section>
-        <Todo addItem ={this.addItem} />
+        <NewTodo  createItem = {this.createItem}/>
+        {this.state.todos.map((todo)=> <Todo key = {todo.id} text = {todo.text} />)}   
+
         <script src = "NewTodo.js"></script>
+        <ul id="tasks-list">
+
+        </ul>
+        
       </div>
+      
       </section>
     );
+    
   }
 
   apiCall() {
@@ -46,7 +70,8 @@ class App extends React.Component {
   componentDidMount() {
     //api call
     this.apiCall();
-    console.log('componentDidMount() lifecycle')
+    console.log('componentDidMount() lifecycle');
+    this.componentWillUpdate.bind(this);
     }
   
   componentWillUnmount() {
@@ -55,7 +80,7 @@ class App extends React.Component {
 
   componentWillUpdate() {
     const toOrder= this.state.todos
-    toOrder.sort()
+    toOrder.sort((a,b)=> a.localeCompare(b,'fr',{ignorePunctions: true})); 
     this.setState({todos: toOrder});
   }
   
@@ -79,6 +104,10 @@ function addItem()
     xhttp.setRequestHeader("x-api-key", "ea8ab2-ab5cb1-9254fd-35e967-531f0c");
     xhttp.send(JSON.stringify(inputText));
 }
+document.addEventListener("DOMContentLoaded", function(event) {
+  loadAPI();
+  document.getElementById("add-item-button").addEventListener("click", addItem);
+})
 
 function createItem(item){
 
@@ -101,6 +130,8 @@ function createItem(item){
   if (item.completed == true) {
       itemTask.classList.add("completed");
   }
+
+  
 
   itemTask.appendChild(taskTitle);
   itemTask.appendChild(completeTask);

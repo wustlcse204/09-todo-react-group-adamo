@@ -8,7 +8,7 @@ class NewTodo extends Component {
 
     return (
       <form className="newtodo" onSubmit = {this.props.addTodo}>
-        <h2><button className="finish"> </button> Check</h2>
+        <h2><button className="finish" > </button> Sort</h2>
       </form>
     );
   }
